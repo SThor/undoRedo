@@ -9,7 +9,7 @@ package Commands;
  *
  * @author givelpa
  */
-public interface UndoableCommand {
+public interface Command {
     void execute();
     void undo();
 }

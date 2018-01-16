@@ -11,7 +11,7 @@ import Model.Model;
  *
  * @author givelpa
  */
-public class Set implements UndoableCommand{
+public class Set implements Command{
     
     private Model model;
     private final int value;

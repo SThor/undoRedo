@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class CommandManager{
     
-    private List<UndoableCommand> undoableCommands = new ArrayList<>();
-    private List<UndoableCommand> redoableCommands = new ArrayList<>();
+    private List<Command> undoableCommands = new ArrayList<>();
+    private List<Command> redoableCommands = new ArrayList<>();
     
-    public void registerCommand(UndoableCommand command){        
+    public void registerCommand(Command command){        
         undoableCommands.add(command);
         redoableCommands.clear();
         command.execute();
@@ -25,7 +25,7 @@ public class CommandManager{
     
     public void redo(){        
         if(redoableCommands.size()>1){
-            UndoableCommand lastCommand = redoableCommands.get(redoableCommands.size()-1);
+            Command lastCommand = redoableCommands.get(redoableCommands.size()-1);
             undoableCommands.add(lastCommand);
             redoableCommands.remove(lastCommand);
             lastCommand.execute();
@@ -34,7 +34,7 @@ public class CommandManager{
     
     public void undo(){
         if(undoableCommands.size()>1){
-            UndoableCommand lastCommand = undoableCommands.get(undoableCommands.size()-1);
+            Command lastCommand = undoableCommands.get(undoableCommands.size()-1);
             redoableCommands.add(lastCommand);
             undoableCommands.remove(lastCommand);
             lastCommand.execute();

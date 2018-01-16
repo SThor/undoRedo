@@ -11,7 +11,7 @@ import Model.Model;
  *
  * @author givelpa
  */
-public class Mul implements UndoableCommand{
+public class Mul implements Command{
     
     private Model model;
     private double value;

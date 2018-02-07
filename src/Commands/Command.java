@@ -5,6 +5,8 @@
  */
 package Commands;
 
+import java.util.UUID;
+
 /**
  *
  * @author givelpa
@@ -15,4 +17,7 @@ public interface Command {
     
     String toString();
     public Command copy();
+
+    void setUUID(UUID uuid);
+    UUID getUUID();
 }

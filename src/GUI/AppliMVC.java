@@ -16,6 +16,7 @@ import Commands.Command;
 import Commands.Macro;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.util.UUID;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
@@ -35,13 +36,15 @@ public class AppliMVC extends javax.swing.JFrame {
     private DefaultListModel<String> listModelMacros = new DefaultListModel<>();
     private DefaultListModel<String> listModelNewMacro = new DefaultListModel<>();
     private Macro tmpMacro;
+    private boolean changeMadeByMe;
+    private UUID uuid;
     private Action displayAction = new AbstractAction(){
         public void actionPerformed(ActionEvent e)
         {
             JList list = (JList)e.getSource();
-            System.out.println(list.getSelectedIndex()+" "+list.getSelectedValue());
-            Macro macroCopy = tmpMacro.copy();
-            commandManager.registerCommand(macroCopy);
+            Macro macroCopy = macros.get(list.getSelectedIndex()).copy();
+            System.out.println(list.getSelectedIndex()+" "+list.getSelectedValue()+" "+macroCopy);
+            processCommand(macroCopy);
         }
     };
 
@@ -50,6 +53,8 @@ public class AppliMVC extends javax.swing.JFrame {
      */
     public AppliMVC() {
         initComponents();
+        this.uuid = UUID.randomUUID();
+        System.out.println("uuid.toString() = " + uuid.toString());
         refreshListModel();        
         listMacros.setModel(listModelMacros);
         ListAction la = new ListAction(listMacros, displayAction);
@@ -338,11 +343,13 @@ public class AppliMVC extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonSaveMacroActionPerformed
 
     private void buttonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
+        changeMadeByMe = true;
         commandManager.undo();
         refreshUndoRedoButtons();
     }//GEN-LAST:event_buttonUndoActionPerformed
 
     private void buttonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
+        changeMadeByMe = true;
         commandManager.redo();
         refreshUndoRedoButtons();
     }//GEN-LAST:event_buttonRedoActionPerformed
@@ -424,6 +431,12 @@ public class AppliMVC extends javax.swing.JFrame {
         model.addPropertyChangeListener(model.PROPERTY_NBCHANGES, (evt) -> {
             textFieldNbOfChanges.setText(""+model.getNbChanges());
         });
+        model.addPropertyChangeListener(model.PROPERTY_LASTUUID, (evt) -> {
+            if(model.getLastUUID() != uuid){
+                commandManager.flushUndoStack();
+                refreshUndoRedoButtons();
+            }
+        });
     }
     
     public Model getModel(){
@@ -443,13 +456,17 @@ public class AppliMVC extends javax.swing.JFrame {
     }
 
     private void processCommand(Command command) {
+        command.setUUID(uuid);
         if(toggleRecording.isSelected()){
             tmpMacro.addCommand(command);
             listModelNewMacro.add(tmpMacro.getSize()-1, command.toString());
-        }else if(toggleDelay.isSelected()){
-            commandManager.registerCommand(command, (Integer) spinnerDelay.getValue());
         }else{
-            commandManager.registerCommand(command);
+            changeMadeByMe = true;
+            if(toggleDelay.isSelected()){
+                commandManager.registerCommand(command, (Integer) spinnerDelay.getValue());
+            }else{
+                commandManager.registerCommand(command);                
+            }
         }
         refreshUndoRedoButtons();
     }

@@ -7,6 +7,7 @@ package Model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.UUID;
 
 /**
  *
@@ -20,8 +21,12 @@ public class Model {
     public final String PROPERTY_VALUE = "value";
     public final String PROPERTY_MEAN = "mean";
     public final String PROPERTY_NBCHANGES = "nbChanges";
+    public final String PROPERTY_LASTUUID = "lastUUID";
     
-    public void setValue(int value){
+    private UUID lastUUID;
+    
+    public void setValue(UUID uuid, int value){
+        setLastUUID(uuid);
         int oldValue = getValue();
         int oldNbChanges = getNbChanges();
         this.value = value;
@@ -35,8 +40,9 @@ public class Model {
         return this.value;
     }
     
-    public void multiply(double c){
-        setValue((int) (getValue()*c));
+    public void multiply(UUID uuid, double c){
+        setLastUUID(uuid);
+        setValue(uuid, (int) (getValue()*c));
     }
     
     public double getMean(){
@@ -68,5 +74,31 @@ public class Model {
         double oldMean = getMean();
         mean = (getMean()*(nbChanges-1)+ getValue())/nbChanges;
         support.firePropertyChange(PROPERTY_MEAN, oldMean, getMean());
+    }
+    
+    public void returnTo(int returnValue) {
+        undoMean(returnValue);
+        int oldValue = getValue();
+        this.value = returnValue;
+        support.firePropertyChange(PROPERTY_VALUE, oldValue, getValue());
+    }
+    
+    private void undoMean(int returnValue) {
+        double oldMean = getMean();
+        double oldNumberOfChanges = getNbChanges();
+        nbChanges--;
+        mean = (oldMean * oldNumberOfChanges - returnValue) / getNbChanges();
+        support.firePropertyChange(PROPERTY_MEAN, oldMean, getMean());
+        support.firePropertyChange(PROPERTY_NBCHANGES, oldNumberOfChanges, getNbChanges());
+    }
+
+    private void setLastUUID(UUID uuid) {
+        UUID oldLastUUID = getLastUUID();
+        this.lastUUID = uuid;
+        support.firePropertyChange(PROPERTY_LASTUUID, oldLastUUID, getLastUUID());
+    }
+
+    public UUID getLastUUID() {
+        return lastUUID;
     }
 }

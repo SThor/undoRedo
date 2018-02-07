@@ -7,6 +7,7 @@ package Commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.swing.Timer;
 
 /**
@@ -51,8 +52,14 @@ public class CommandManager{
     }
 
     public void registerCommand(Command command, Integer delay) {
-        Timer timer = new Timer(delay, (e) -> {
+        Timer timer = new Timer(delay*1000, (e) -> {
             registerCommand(command);
         });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    public void flushUndoStack() {
+        undoableCommands.clear();
     }
 }

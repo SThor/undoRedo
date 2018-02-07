@@ -7,6 +7,7 @@ package Commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -15,6 +16,7 @@ import java.util.List;
 public class Macro implements Command{
     List<Command> commands = new ArrayList<Command>();
     String name;
+    private UUID uuid;
 
     public Macro copy() {
         Macro macroCopy = new Macro(this.name);
@@ -34,8 +36,10 @@ public class Macro implements Command{
 
     @Override
     public void undo() {
-        for (int i=commands.size();i<=0;i--) {
+        System.out.println("commands.size() = " + commands.size());
+        for (int i=commands.size()-1;i>=0;i--) {
             Command command = commands.get(i);
+            System.out.println("Undoing command " + command);
             command.undo();
         }
     }
@@ -67,5 +71,18 @@ public class Macro implements Command{
     @Override
     public String toString() {
         return "Macro "+ name;
+    }
+
+    @Override
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+        for (Command command : commands) {
+            command.setUUID(uuid);
+        }
+    }
+
+    @Override
+    public UUID getUUID() {
+        return uuid;
     }
 }

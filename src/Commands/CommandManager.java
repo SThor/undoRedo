@@ -7,6 +7,7 @@ package Commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Timer;
 
 /**
  *
@@ -24,7 +25,7 @@ public class CommandManager{
     }
     
     public void redo(){        
-        if(redoableCommands.size()>1){
+        if(redoableCommands.size()>0){
             Command lastCommand = redoableCommands.get(redoableCommands.size()-1);
             undoableCommands.add(lastCommand);
             redoableCommands.remove(lastCommand);
@@ -33,11 +34,25 @@ public class CommandManager{
     }
     
     public void undo(){
-        if(undoableCommands.size()>1){
+        if(undoableCommands.size()>0){
             Command lastCommand = undoableCommands.get(undoableCommands.size()-1);
             redoableCommands.add(lastCommand);
             undoableCommands.remove(lastCommand);
-            lastCommand.execute();
+            lastCommand.undo();
         }
+    }
+    
+    public boolean canUndo(){
+        return undoableCommands.size()>0;
+    }
+    
+    public boolean canRedo(){
+        return redoableCommands.size()>0;
+    }
+
+    public void registerCommand(Command command, Integer delay) {
+        Timer timer = new Timer(delay, (e) -> {
+            registerCommand(command);
+        });
     }
 }

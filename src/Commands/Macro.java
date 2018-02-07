@@ -16,9 +16,12 @@ public class Macro implements Command{
     List<Command> commands = new ArrayList<Command>();
     String name;
 
-    public Macro(Macro tmpMacro) {
-        this.commands = tmpMacro.commands;
-        this.name = tmpMacro.name;
+    public Macro copy() {
+        Macro macroCopy = new Macro(this.name);
+        for (Command command : this.commands) {
+            macroCopy.commands.add(command.copy());
+        }
+        return macroCopy;
     }
 
     @Override
@@ -59,5 +62,10 @@ public class Macro implements Command{
 
     public int getSize() {
         return commands.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Macro "+ name;
     }
 }

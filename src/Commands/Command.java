@@ -12,4 +12,7 @@ package Commands;
 public interface Command {
     void execute();
     void undo();
+    
+    String toString();
+    public Command copy();
 }

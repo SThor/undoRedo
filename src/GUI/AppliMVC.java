@@ -14,7 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import Commands.Command;
 import Commands.Macro;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
@@ -30,6 +35,15 @@ public class AppliMVC extends javax.swing.JFrame {
     private DefaultListModel<String> listModelMacros = new DefaultListModel<>();
     private DefaultListModel<String> listModelNewMacro = new DefaultListModel<>();
     private Macro tmpMacro;
+    private Action displayAction = new AbstractAction(){
+        public void actionPerformed(ActionEvent e)
+        {
+            JList list = (JList)e.getSource();
+            System.out.println(list.getSelectedIndex()+" "+list.getSelectedValue());
+            Macro macroCopy = tmpMacro.copy();
+            commandManager.registerCommand(macroCopy);
+        }
+    };
 
     /**
      * Creates new form AppliMVC
@@ -38,8 +52,10 @@ public class AppliMVC extends javax.swing.JFrame {
         initComponents();
         refreshListModel();        
         listMacros.setModel(listModelMacros);
+        ListAction la = new ListAction(listMacros, displayAction);
         listMacroCommands.setModel(listModelNewMacro);
         setModel(new Model());
+        refreshUndoRedoButtons();
     }
 
     /**
@@ -51,10 +67,11 @@ public class AppliMVC extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         panelSetters = new javax.swing.JPanel();
-        buttonSet10 = new javax.swing.JButton();
-        buttonSet20 = new javax.swing.JButton();
-        buttonSet30 = new javax.swing.JButton();
+        buttonToggle10 = new javax.swing.JToggleButton();
+        buttonToggle20 = new javax.swing.JToggleButton();
+        buttonToggle30 = new javax.swing.JToggleButton();
         panelCommands = new javax.swing.JPanel();
         buttonMul2 = new javax.swing.JButton();
         buttonMul3 = new javax.swing.JButton();
@@ -67,6 +84,9 @@ public class AppliMVC extends javax.swing.JFrame {
         textFieldMean = new javax.swing.JTextField();
         labelNbOfChanges = new javax.swing.JLabel();
         textFieldNbOfChanges = new javax.swing.JTextField();
+        panelUndoRedo = new javax.swing.JPanel();
+        buttonUndo = new javax.swing.JButton();
+        buttonRedo = new javax.swing.JButton();
         panelMetaCommands = new javax.swing.JPanel();
         panelMacros = new javax.swing.JPanel();
         toggleRecording = new javax.swing.JToggleButton();
@@ -81,33 +101,40 @@ public class AppliMVC extends javax.swing.JFrame {
         listMacroCommands = new javax.swing.JList<>();
         buttonSaveMacro = new javax.swing.JButton();
         panelDeferredActions = new javax.swing.JPanel();
+        toggleDelay = new javax.swing.JToggleButton();
+        jPanel1 = new javax.swing.JPanel();
+        labelDelay = new javax.swing.JLabel();
+        spinnerDelay = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
-        buttonSet10.setText("10");
-        buttonSet10.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(buttonToggle10);
+        buttonToggle10.setText("10");
+        buttonToggle10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSet10ActionPerformed(evt);
+                buttonToggle10ActionPerformed(evt);
             }
         });
-        panelSetters.add(buttonSet10);
+        panelSetters.add(buttonToggle10);
 
-        buttonSet20.setText("20");
-        buttonSet20.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(buttonToggle20);
+        buttonToggle20.setText("20");
+        buttonToggle20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSet20ActionPerformed(evt);
+                buttonToggle20ActionPerformed(evt);
             }
         });
-        panelSetters.add(buttonSet20);
+        panelSetters.add(buttonToggle20);
 
-        buttonSet30.setText("30");
-        buttonSet30.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(buttonToggle30);
+        buttonToggle30.setText("30");
+        buttonToggle30.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSet30ActionPerformed(evt);
+                buttonToggle30ActionPerformed(evt);
             }
         });
-        panelSetters.add(buttonSet30);
+        panelSetters.add(buttonToggle30);
 
         getContentPane().add(panelSetters);
 
@@ -170,9 +197,27 @@ public class AppliMVC extends javax.swing.JFrame {
 
         getContentPane().add(panelView);
 
-        panelMetaCommands.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        buttonUndo.setText("Undo");
+        buttonUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonUndoActionPerformed(evt);
+            }
+        });
+        panelUndoRedo.add(buttonUndo);
+
+        buttonRedo.setText("Redo");
+        buttonRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonRedoActionPerformed(evt);
+            }
+        });
+        panelUndoRedo.add(buttonRedo);
+
+        getContentPane().add(panelUndoRedo);
+
         panelMetaCommands.setLayout(new javax.swing.BoxLayout(panelMetaCommands, javax.swing.BoxLayout.LINE_AXIS));
 
+        panelMacros.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         panelMacros.setLayout(new java.awt.BorderLayout());
 
         toggleRecording.setText("Record new macro");
@@ -190,6 +235,7 @@ public class AppliMVC extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        listMacros.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollPaneMacros.setViewportView(listMacros);
 
         panelMacroToggle.add(scrollPaneMacros, "scrollPaneMacros");
@@ -226,6 +272,27 @@ public class AppliMVC extends javax.swing.JFrame {
         panelMacros.add(panelMacroToggle, java.awt.BorderLayout.CENTER);
 
         panelMetaCommands.add(panelMacros);
+
+        panelDeferredActions.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelDeferredActions.setLayout(new java.awt.BorderLayout());
+
+        toggleDelay.setText("Activate delay");
+        toggleDelay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleDelayActionPerformed(evt);
+            }
+        });
+        panelDeferredActions.add(toggleDelay, java.awt.BorderLayout.NORTH);
+
+        labelDelay.setText("Delay (seconds)");
+        jPanel1.add(labelDelay);
+
+        spinnerDelay.setPreferredSize(new java.awt.Dimension(50, 30));
+        spinnerDelay.setRequestFocusEnabled(false);
+        jPanel1.add(spinnerDelay);
+
+        panelDeferredActions.add(jPanel1, java.awt.BorderLayout.CENTER);
+
         panelMetaCommands.add(panelDeferredActions);
 
         getContentPane().add(panelMetaCommands);
@@ -233,74 +300,20 @@ public class AppliMVC extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonSet10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSet10ActionPerformed
-        Command command = new Set(model, 10);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);            
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Set 10");
-        }else{
-            commandManager.registerCommand(command);
-        }
-    }//GEN-LAST:event_buttonSet10ActionPerformed
-
-    private void buttonSet20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSet20ActionPerformed
-        Command command = new Set(model,20);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Set 20");
-        }else{
-            commandManager.registerCommand(command);
-        }
-    }//GEN-LAST:event_buttonSet20ActionPerformed
-
-    private void buttonSet30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSet30ActionPerformed
-        Command command = new Set(model,30);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Set 30");
-        }else{
-            commandManager.registerCommand(command);
-        }
-    }//GEN-LAST:event_buttonSet30ActionPerformed
-
     private void buttonMul2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMul2ActionPerformed
-        Command command = new Mul(model,2);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Mul 2");
-        }else{
-            commandManager.registerCommand(command);
-        }
+        processCommand(new Mul(model,2));
     }//GEN-LAST:event_buttonMul2ActionPerformed
 
     private void buttonMul3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMul3ActionPerformed
-        Command command = new Mul(model,3);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Mul 3");
-        }else{
-            commandManager.registerCommand(command);
-        }
+        processCommand(new Mul(model,3));
     }//GEN-LAST:event_buttonMul3ActionPerformed
 
     private void buttonDiv2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDiv2ActionPerformed
-        Command command = new Mul(model, 1.0/2.0);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Div 2");
-        }else{
-            commandManager.registerCommand(command);
-        }
+        processCommand(new Mul(model, 1.0/2.0));
     }//GEN-LAST:event_buttonDiv2ActionPerformed
 
     private void buttonDiv3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDiv3ActionPerformed
-        Command command = new Mul(model, 1.0/3.0);
-        if(toggleRecording.isSelected()){
-            tmpMacro.addCommand(command);
-            listModelNewMacro.add(tmpMacro.getSize()-1, "Div 3");
-        }else{
-            commandManager.registerCommand(command);
-        }
+        processCommand(new Mul(model, 1.0/3.0));
     }//GEN-LAST:event_buttonDiv3ActionPerformed
 
     private void toggleRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleRecordingActionPerformed
@@ -318,20 +331,56 @@ public class AppliMVC extends javax.swing.JFrame {
     }//GEN-LAST:event_toggleRecordingActionPerformed
 
     private void buttonSaveMacroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveMacroActionPerformed
-        macros.add(new Macro(tmpMacro));
+        tmpMacro.setName(textFieldMacroName.getText());
+        macros.add(tmpMacro.copy());
         refreshListModel();
         toggleRecording.doClick();
     }//GEN-LAST:event_buttonSaveMacroActionPerformed
 
+    private void buttonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUndoActionPerformed
+        commandManager.undo();
+        refreshUndoRedoButtons();
+    }//GEN-LAST:event_buttonUndoActionPerformed
+
+    private void buttonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRedoActionPerformed
+        commandManager.redo();
+        refreshUndoRedoButtons();
+    }//GEN-LAST:event_buttonRedoActionPerformed
+
+    private void buttonToggle10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonToggle10ActionPerformed
+        processCommand(new Set(model, 10));
+    }//GEN-LAST:event_buttonToggle10ActionPerformed
+
+    private void buttonToggle20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonToggle20ActionPerformed
+        processCommand(new Set(model, 20));
+    }//GEN-LAST:event_buttonToggle20ActionPerformed
+
+    private void buttonToggle30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonToggle30ActionPerformed
+        processCommand(new Set(model, 30));
+    }//GEN-LAST:event_buttonToggle30ActionPerformed
+
+    private void toggleDelayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleDelayActionPerformed
+        if(toggleDelay.isSelected()){
+            toggleDelay.setText("Remove delay");
+        }else{
+            toggleDelay.setText("Activate delay");
+        }
+    }//GEN-LAST:event_toggleDelayActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDiv2;
     private javax.swing.JButton buttonDiv3;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton buttonMul2;
     private javax.swing.JButton buttonMul3;
+    private javax.swing.JButton buttonRedo;
     private javax.swing.JButton buttonSaveMacro;
-    private javax.swing.JButton buttonSet10;
-    private javax.swing.JButton buttonSet20;
-    private javax.swing.JButton buttonSet30;
+    private javax.swing.JToggleButton buttonToggle10;
+    private javax.swing.JToggleButton buttonToggle20;
+    private javax.swing.JToggleButton buttonToggle30;
+    private javax.swing.JButton buttonUndo;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel labelDelay;
     private javax.swing.JLabel labelMacroName;
     private javax.swing.JLabel labelMean;
     private javax.swing.JLabel labelNbOfChanges;
@@ -346,13 +395,16 @@ public class AppliMVC extends javax.swing.JFrame {
     private javax.swing.JPanel panelMetaCommands;
     private javax.swing.JPanel panelRecording;
     private javax.swing.JPanel panelSetters;
+    private javax.swing.JPanel panelUndoRedo;
     private javax.swing.JPanel panelView;
     private javax.swing.JScrollPane scrollPaneMacroCommands;
     private javax.swing.JScrollPane scrollPaneMacros;
+    private javax.swing.JSpinner spinnerDelay;
     private javax.swing.JTextField textFieldMacroName;
     private javax.swing.JTextField textFieldMean;
     private javax.swing.JTextField textFieldNbOfChanges;
     private javax.swing.JTextField textFieldValue;
+    private javax.swing.JToggleButton toggleDelay;
     private javax.swing.JToggleButton toggleRecording;
     // End of variables declaration//GEN-END:variables
 
@@ -383,5 +435,22 @@ public class AppliMVC extends javax.swing.JFrame {
         for (int i=0;i<macros.size();i++) {
             listModelMacros.add(i, macros.get(i).getName());
         }
+    }
+
+    private void refreshUndoRedoButtons() {
+        buttonUndo.setEnabled(commandManager.canUndo());
+        buttonRedo.setEnabled(commandManager.canRedo());
+    }
+
+    private void processCommand(Command command) {
+        if(toggleRecording.isSelected()){
+            tmpMacro.addCommand(command);
+            listModelNewMacro.add(tmpMacro.getSize()-1, command.toString());
+        }else if(toggleDelay.isSelected()){
+            commandManager.registerCommand(command, (Integer) spinnerDelay.getValue());
+        }else{
+            commandManager.registerCommand(command);
+        }
+        refreshUndoRedoButtons();
     }
 }

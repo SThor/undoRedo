@@ -30,5 +30,14 @@ public class Set implements Command{
     public void undo() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public Command copy() {
+        return new Set(model, value);
+    }
+
+    @Override
+    public String toString() {
+        return "Set "+value;
+    }
 }

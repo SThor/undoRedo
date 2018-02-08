@@ -6,15 +6,18 @@
 package Commands;
 
 import Model.Model;
+import java.util.UUID;
 
 /**
  *
  * @author givelpa
  */
-public class Set implements UndoableCommand{
+public class Set implements Command{
     
     private Model model;
     private final int value;
+    private int oldValue;
+    private UUID uuid;
 
     public Set(Model model, int value) {
         this.model = model;
@@ -23,12 +26,32 @@ public class Set implements UndoableCommand{
     
     @Override
     public void execute() {
-        model.setValue(value);
+        oldValue = model.getValue();
+        model.setValue(uuid, value);
     }
 
     @Override
     public void undo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        model.returnTo(oldValue);
     }
-    
+
+    @Override
+    public Command copy() {
+        return new Set(model, value);
+    }
+
+    @Override
+    public String toString() {
+        return "Set "+value;
+    }
+
+    @Override
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return uuid;
+    }
 }

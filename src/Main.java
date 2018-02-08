@@ -1,5 +1,6 @@
 
 import GUI.AppliMVC;
+import java.util.UUID;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -48,7 +49,7 @@ public class Main {
                 a1.setVisible(true);
                 a2.setVisible(true);
                 
-                a2.getModel().setValue(7);
+                a2.getModel().setValue(UUID.randomUUID(),7);
                 a1.setModel(a2.getModel());
             }
         });

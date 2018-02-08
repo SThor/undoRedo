@@ -5,11 +5,19 @@
  */
 package Commands;
 
+import java.util.UUID;
+
 /**
  *
  * @author givelpa
  */
-public interface UndoableCommand {
+public interface Command {
     void execute();
     void undo();
+    
+    String toString();
+    public Command copy();
+
+    void setUUID(UUID uuid);
+    UUID getUUID();
 }

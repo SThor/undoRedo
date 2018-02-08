@@ -6,15 +6,18 @@
 package Commands;
 
 import Model.Model;
+import java.util.UUID;
 
 /**
  *
  * @author givelpa
  */
-public class Mul implements UndoableCommand{
+public class Mul implements Command{
     
     private Model model;
     private double value;
+    private int oldValue;
+    private UUID uuid;
 
     public Mul(Model model, double value) {
         this.model = model;
@@ -23,12 +26,32 @@ public class Mul implements UndoableCommand{
 
     @Override
     public void execute() {
-        model.multiply(value);
+        oldValue = model.getValue();
+        model.multiply(uuid, value);
     }
 
     @Override
     public void undo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        model.returnTo(oldValue);
+    }
+
+    @Override
+    public Command copy() {
+        return new Mul(model, value);
     }
     
+    @Override
+    public String toString() {
+        return "Mul "+value;
+    }
+
+    @Override
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return uuid;
+    }
 }

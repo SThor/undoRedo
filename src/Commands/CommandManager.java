@@ -5,9 +5,7 @@
  */
 package Commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Stack;
 import javax.swing.Timer;
 
 /**
@@ -16,8 +14,8 @@ import javax.swing.Timer;
  */
 public class CommandManager{
     
-    private List<Command> undoableCommands = new ArrayList<>();
-    private List<Command> redoableCommands = new ArrayList<>();
+    private Stack<Command> undoableCommands = new Stack<>();
+    private Stack<Command> redoableCommands = new Stack<>();
     
     public void registerCommand(Command command){        
         undoableCommands.add(command);
@@ -27,18 +25,16 @@ public class CommandManager{
     
     public void redo(){        
         if(redoableCommands.size()>0){
-            Command lastCommand = redoableCommands.get(redoableCommands.size()-1);
-            undoableCommands.add(lastCommand);
-            redoableCommands.remove(lastCommand);
+            Command lastCommand = redoableCommands.pop();
+            undoableCommands.push(lastCommand);
             lastCommand.execute();
         }
     }
     
     public void undo(){
         if(undoableCommands.size()>0){
-            Command lastCommand = undoableCommands.get(undoableCommands.size()-1);
-            redoableCommands.add(lastCommand);
-            undoableCommands.remove(lastCommand);
+            Command lastCommand = undoableCommands.pop();
+            redoableCommands.push(lastCommand);
             lastCommand.undo();
         }
     }

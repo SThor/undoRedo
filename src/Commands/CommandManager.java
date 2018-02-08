@@ -24,7 +24,7 @@ public class CommandManager{
     }
     
     public void redo(){        
-        if(redoableCommands.size()>0){
+        if(!redoableCommands.empty()){
             Command lastCommand = redoableCommands.pop();
             undoableCommands.push(lastCommand);
             lastCommand.execute();
@@ -32,7 +32,7 @@ public class CommandManager{
     }
     
     public void undo(){
-        if(undoableCommands.size()>0){
+        if(!undoableCommands.empty()){
             Command lastCommand = undoableCommands.pop();
             redoableCommands.push(lastCommand);
             lastCommand.undo();
@@ -40,11 +40,11 @@ public class CommandManager{
     }
     
     public boolean canUndo(){
-        return undoableCommands.size()>0;
+        return !undoableCommands.empty();
     }
     
     public boolean canRedo(){
-        return redoableCommands.size()>0;
+        return !redoableCommands.empty();
     }
 
     public void registerCommand(Command command, Integer delay) {

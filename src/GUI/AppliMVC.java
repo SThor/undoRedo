@@ -222,7 +222,7 @@ public class AppliMVC extends javax.swing.JFrame {
 
         panelMetaCommands.setLayout(new javax.swing.BoxLayout(panelMetaCommands, javax.swing.BoxLayout.LINE_AXIS));
 
-        panelMacros.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelMacros.setBorder(javax.swing.BorderFactory.createTitledBorder("Macros"));
         panelMacros.setLayout(new java.awt.BorderLayout());
 
         toggleRecording.setText("Record new macro");
@@ -278,7 +278,7 @@ public class AppliMVC extends javax.swing.JFrame {
 
         panelMetaCommands.add(panelMacros);
 
-        panelDeferredActions.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelDeferredActions.setBorder(javax.swing.BorderFactory.createTitledBorder("Delayed actions"));
         panelDeferredActions.setLayout(new java.awt.BorderLayout());
 
         toggleDelay.setText("Activate delay");
